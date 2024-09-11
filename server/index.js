@@ -1,7 +1,10 @@
 import express from 'express';
+import { apiRouter } from './router/api.js';
 
 const app = express();
 const port = 5026;
+
+apiRouter.use('/api', apiRouter);
 
 app.all('*', (req,res) => {
     return res.json({
