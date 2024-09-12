@@ -7,7 +7,7 @@ export function LocationListing() {
     const [locations, setLocations] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5020/api/locations')
+        fetch('http://localhost:5026/api/locations')
             .then(res => res.json())
             .then(obj => {
                 if (typeof obj !== 'object') {

@@ -1,18 +1,16 @@
-import express from 'express';
-import {connection} from '../../db.js';
+import { connection } from '../../db.js';
+import express from 'express'
 
+export const locationsAPIrouter = express.Router();
 
-export const locationsApiRouter = express.Router();
-
-
-locationsApiRouter.get('/', getLocations);
+locationsAPIrouter.get('/', getLocations);
 
 async function getLocations(req, res) {
     const sql = 'SELECT * FROM locations;';
     const dataFromServer = await connection.execute(sql);
 
     return res.json({
-        status: 'yes',
+        status: 'success',
         data: dataFromServer[0],
     });
 }
