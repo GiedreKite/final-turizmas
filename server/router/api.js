@@ -6,7 +6,7 @@ export const apiRouter = express.Router();
 apiRouter.use('/locations', locationsApiRouter);
 
 
-apiRouter.get('/api', (req, res) => {
+apiRouter.get('/', (req, res) => {
     return res.json({
         status: 'error',
         msg: 'Nepataikei, nepataikei... Reikia konkretaus api. end pointo'

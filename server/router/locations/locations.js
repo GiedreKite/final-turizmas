@@ -4,49 +4,15 @@ import {connection} from '../../db.js';
 
 export const locationsApiRouter = express.Router();
 
-locationsApiRouter.get('/', async (req, res) => {
-    const data = [
-        {
-            img: img1,
-            name: 'Menulis',
-            address: {
-                country: 'Kostmosas',
-                city: 'A',
-                street: 'A',
-                number: 'A',
-                zip: 'A',
-            },
-        },
-        {
-            img: img2,
-            name: 'Gelyte',
-            address: {
-                country: 'Tundra',
-                city: 'B',
-                street: 'B',
-                number: 'B',
-                zip: 'B',
-            },
-        },
-        {
-            img: img3,
-            name: 'Meduza',
-            address: {
-                country: 'Baltijos jura',
-                city: 'C',
-                street: 'C',
-                number: 'C',
-                zip: 'C',
-            },
-        },
 
-    ]
+locationsApiRouter.get('/', getLocations);
 
+async function getLocations(req, res) {
     const sql = 'SELECT * FROM locations;';
     const dataFromServer = await connection.execute(sql);
-    console.log(dataFromServer)
+
     return res.json({
         status: 'yes',
-        msg: data
+        data: dataFromServer[0],
     });
-});
+}

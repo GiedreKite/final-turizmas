@@ -7,4 +7,3 @@ export const connection = await mysql.createConnection({
     database: 'turizmas',
 });
 
-export default connection;
