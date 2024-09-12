@@ -1,9 +1,18 @@
+import { useEffect, useState } from "react";
 import { Footer } from "../components/footer/Footer";
 import { Header } from "../components/header/Header";
 import { LocationCard } from "../components/locations/LocationCard";
 import { locationsData } from "../data/locationsData";
 
 export function LocationListing() {
+   const[locations,setLocations] = useState([]);
+
+   useEffect(() => {
+    fetch('http://localhost:5026/api/locations')
+        .then(res => res.json())
+        .then(data => console.log(data))
+   })
+    
     return (
         <>
             <Header />

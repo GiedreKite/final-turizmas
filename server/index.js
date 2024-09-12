@@ -6,8 +6,13 @@ import { env } from './env.js'
 
 const app = express();
 const port = env.SERVER_PORT;
+app.use(express.json()) 
+// for parsing application/json
+app.use(express.urlencoded({ extended: true })) 
+// for parsing application/x-www-form-urlencoded
+app.use(express.static('public'));
 
-apiRouter.use('/api', apiRouter);
+apiRouter.use('/', apiRouter);
 
 app.all('*', (req,res) => {
     return res.json({
