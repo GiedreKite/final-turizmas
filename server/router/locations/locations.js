@@ -1,8 +1,10 @@
 import express from "express";
+import {connection} from '../../db.js';
 
+console.log(connection)
 export const locationsApiRouter = express.Router();
 
-locationsApiRouter.get('/', (req, res) => {
+locationsApiRouter.get('/', async (req, res) => {
     const data = [
         {
             img: img1,
@@ -39,6 +41,9 @@ locationsApiRouter.get('/', (req, res) => {
         },
 
     ]
+
+    const sql = 'SELECT * FROM locations;';
+    const dataFromServer = await connection.execute(sql);
     return res.json({
         status: 'yes',
         msg: 'Prasau, jusu lokacijos'
