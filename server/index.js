@@ -35,5 +35,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(env.SERVER_PORT, () => {
-    console.log('Turizmo serveris: http://localhost:' + env.SERVER_PORT);
+    console.log('Draugo serveris: http://localhost:' + env.SERVER_PORT);
 });
