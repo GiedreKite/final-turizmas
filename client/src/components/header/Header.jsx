@@ -3,7 +3,7 @@ import logo from '../../assets/react.svg';
 
 export function Header() {
     return (
-        <div className="container">
+      
             <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
                 <div className="col-md-3 mb-2 mb-md-0">
                     <a href="/" className="d-inline-flex link-body-emphasis text-decoration-none">
@@ -24,10 +24,10 @@ export function Header() {
                 </ul>
 
                 <div className="col-md-3 text-end">
-                   <Link to="/Login" className="btn btn-outline-primary me-2">Prisijungti</Link>
-                    <Link to="/Register" className="btn btn-primary">Registracija</Link>
+                   <Link to="/login" className="btn btn-outline-primary me-2">Prisijungti</Link>
+                    <Link to="/register" className="btn btn-primary">Registracija</Link>
                 </div>
             </header>
-        </div>
+     
     );
 }

@@ -14,8 +14,14 @@ const helmetOptions = {
 
 const app = express();
 
+app.use(express.json({
+    type: 'application/json',
+}));
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cors(corsOptions));
 app.use(helmet(helmetOptions));
+
 app.use('/api', apiRouter);
 
 app.all('*', (req, res) => {
@@ -35,5 +41,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(env.SERVER_PORT, () => {
-    console.log('Draugo serveris: http://localhost:' + env.SERVER_PORT);
+    console.log('Turizmo serveris: http://localhost:' + env.SERVER_PORT);
 });

@@ -1,34 +1,91 @@
+import { useState } from "react";
 import { Footer } from "../components/footer/Footer";
 import { Header } from "../components/header/Header";
 
 export function Register() {
-    return ( 
+    const minUsernameLength = 3;
+    const maxUsernameLength = 20;
+    const minPasswordLength = 12;
+    const maxPasswordLength = 100;
+
+    const [username, setUsername] = useState('');
+    const [usernameError, setUsernameError] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [isFormValidated, setIsFormValidated] = useState(false);
+    const [apiResponse, setApiResponse] = useState(null);
+
+    function submitForm(e) {
+        e.preventDefault();
+
+        setIsFormValidated(true);
+
+        let usernameError = '';
+        if (username.length < minUsernameLength) {
+            usernameError = `Slapyvardis yra per trumpas, turi būti minimum ${minUsernameLength} simbolių`;
+        } else if (username.length > maxUsernameLength) {
+            usernameError = `Slapyvardis yra per ilgas, turi būti maximum ${maxUsernameLength} simbolių`;
+        }
+        setUsernameError(usernameError);
+
+        let passwordError = '';
+        if (password.length < minPasswordLength) {
+            passwordError = `Slaptažodis yra per trumpas, turi būti minimum ${minPasswordLength} simbolių`;
+        } else if (password.length > maxPasswordLength) {
+            passwordError = `Slaptažodis yra per ilgas, turi būti maximum ${maxPasswordLength} simbolių`;
+        }
+        setPasswordError(passwordError);
+
+        if (!usernameError && !passwordError) {
+
+          fetch('http://localhost:5028/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type':'application/json',
+            },
+            body: JSON.stringify({
+              username, 
+              password,
+            })
+          })
+
+          .then(res => res.json())
+          .then(data => setApiResponse(data))
+          .catch(err => console.error(err))
+            console.log('siunciame duomenis i serveri registracijai...');
+        }
+    }
+
+    return (
         <>
             <Header />
-            <main className="form-signin w-100 m-auto">
-  <form className="col-12 col-md-8 offset-md-2 col-lg-3 offset-lg-2 col-xl-4 offset-xl-2">
-    <img className="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"/>
-    <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
+            <main className="form-signin container">
+                <div className="row">
+                    <form onSubmit={submitForm} className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+                        <h1 className="h3 mb-3 fw-normal">Registracija</h1>
 
-    <div className="form-floating">
-      <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com"/>
-      <label for="floatingInput">Email address</label>
-    </div>
-    <div className="form-floating">
-      <input type="password" className="form-control" id="floatingPassword" placeholder="Password"/>
-      <label for="floatingPassword">Password</label>
-    </div>
+{apiResponse && apiResponse.status === `success` ? <p className="alert alert-success">{apiResponse.data}</p> : null}
+{apiResponse && apiResponse.status === `error` ? <p className="alert alert-danger">{apiResponse.data}</p> : null}
+                        <div className="form-floating">
+                            <input value={username} onChange={e => setUsername(e.target.value.trim())}
+                                type="text" id="username" placeholder="Vartotojo vardas"
+                                className={'form-control ' + (isFormValidated ? usernameError ? 'is-invalid' : 'is-valid' : '')} />
+                            <label htmlFor="username">Spapyvardis</label>
+                            {usernameError && <p className="invalid-feedback">{usernameError}</p>}
+                        </div>
 
-    <div className="form-check text-start my-3">
-      <input className="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault"/>
-      <label className="form-check-label" for="flexCheckDefault">
-        Remember me
-      </label>
-    </div>
-    <button className="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-    <p className="mt-5 mb-3 text-body-secondary">© 2017–2024</p>
-  </form>
-</main>
+                        <div className="form-floating">
+                            <input value={password} onChange={e => setPassword(e.target.value)}
+                                type="password" id="password" placeholder="Password"
+                                className={'form-control ' + (isFormValidated ? passwordError ? 'is-invalid' : 'is-valid' : '')} />
+                            <label htmlFor="password">Spaltažodis</label>
+                            {passwordError && <p className="invalid-feedback">{passwordError}</p>}
+                        </div>
+
+                        <button className="btn btn-primary w-100 py-2 mt-3" type="submit">Registruotis</button>
+                    </form>
+                </div>
+            </main>
             <Footer />
         </>
     );
