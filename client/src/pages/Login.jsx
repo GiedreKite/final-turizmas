@@ -1,8 +1,12 @@
-import { useState } from "react";
+
+import { useContext, useState } from "react";
 import { Footer } from "../components/footer/Footer";
 import { Header } from "../components/header/Header";
+import { useNavigate } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext";
 
 export function Login() {
+    const {changeLoginStatus} = useContext(GlobalContext)
     const minUsernameLength = 3;
     const maxUsernameLength = 20;
     const minPasswordLength = 12;
@@ -14,6 +18,8 @@ export function Login() {
     const [passwordError, setPasswordError] = useState('');
     const [isFormValidated, setIsFormValidated] = useState(false);
     const [apiResponse, setApiResponse] = useState(null);
+
+    const navigate = useNavigate();
 
     function submitForm(e) {
         e.preventDefault();
@@ -37,22 +43,27 @@ export function Login() {
         setPasswordError(passwordError);
 
         if (!usernameError && !passwordError) {
-
-          fetch('http://localhost:5028/api/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type':'application/json',
-            },
-            body: JSON.stringify({
-              username, 
-              password,
+            fetch('http://localhost:5028/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    username,
+                    password,
+                }),
             })
-          })
+                .then(res => res.json())
+                .then(data => {
+                    setApiResponse(data);
 
-          .then(res => res.json())
-          .then(data => setApiResponse(data))
-          .catch(err => console.error(err))
-            console.log('siunciame duomenis i serveri registracijai...');
+                    if (data.status === 'success') {
+                        changeLoginStatus(true);
+                        navigate('/dashboard');
+                    }
+                })
+                .catch(err => console.error(err));
         }
     }
 
@@ -64,11 +75,12 @@ export function Login() {
                     <form onSubmit={submitForm} className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
                         <h1 className="h3 mb-3 fw-normal">Prisijungti</h1>
 
-{apiResponse && apiResponse.status === `success` ? <p className="alert alert-success">{apiResponse.data}</p> : null}
-{apiResponse && apiResponse.status === `error` ? <p className="alert alert-danger">{apiResponse.data}</p> : null}
+                        {apiResponse && apiResponse.status === 'success' ? <p className="alert alert-success">{apiResponse.msg}</p> : null}
+                        {apiResponse && apiResponse.status === 'error' ? <p className="alert alert-danger">{apiResponse.msg}</p> : null}
+
                         <div className="form-floating">
                             <input value={username} onChange={e => setUsername(e.target.value.trim())}
-                                type="text" id="username" placeholder="Vartotojo vardas"
+                                type="text" id="username" placeholder="Chuck"
                                 className={'form-control ' + (isFormValidated ? usernameError ? 'is-invalid' : 'is-valid' : '')} />
                             <label htmlFor="username">Spapyvardis</label>
                             {usernameError && <p className="invalid-feedback">{usernameError}</p>}

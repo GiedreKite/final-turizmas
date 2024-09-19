@@ -6,6 +6,33 @@ export const loginAPIrouter = express.Router();
 
 loginAPIrouter.post('/', postLogin);
 
+loginAPIrouter.get('/', getLogin);
+const tokenlenght=20;
+
+async function getLogin(req, res) {
+    const coockies = req
+    .headers
+    .cookie
+    .split(';')
+    .map(s => s.trim().split('='))
+    .reduce((total, item) => ({...total, [item[0]]: item[1] }), {})
+
+    console.log(req.headers.cookie)
+//     if (typeof req.body !== 'object'
+//         || Array.isArray(req.body)
+//         || req.body === null
+//     ) {
+//         return res.json({
+//             status: 'error',
+//             msg: 'Pagrindinis duomenu tipas turi buti objektas',
+//         });
+//     }   
+return res.json({
+            status: 'succsess',
+            msg: 'Pagrindinis duomenu tipas turi buti objektas',
+        });
+}
+
 loginAPIrouter.use((req, res) => {
     return res.json({
         status: 'error',
@@ -20,7 +47,7 @@ async function postLogin(req, res) {
     ) {
         return res.json({
             status: 'error',
-            data: 'Pagrindinis duomenu tipas turi buti objektas',
+            msg: 'Pagrindinis duomenu tipas turi buti objektas',
         });
     }
 
@@ -29,7 +56,7 @@ async function postLogin(req, res) {
     if (Object.keys(req.body).length !== requiredFields.length) {
         return res.json({
             status: 'error',
-            data: `Objekte turi buti tik ${requiredFields.length} raktai: ${requiredFields.join(', ')}`,
+            msg: `Objekte turi buti tik ${requiredFields.length} raktai: ${requiredFields.join(', ')}`,
         });
     }
 
@@ -39,7 +66,7 @@ async function postLogin(req, res) {
     if (usernameError) {
         return res.json({
             status: 'error',
-            data: usernameError,
+            msg: usernameError,
         });
     }
 
@@ -47,35 +74,42 @@ async function postLogin(req, res) {
     if (passwordError) {
         return res.json({
             status: 'error',
-            data: passwordError,
+            msg: passwordError,
         });
     }
+
+    // 1) isitikiname, jog yra tik 1 toks {username, password} variantas (user'is)
+    // 2) sugeneruojame RANDOM string
+    // 3) ji isirasome i DB (nauja lentele)
+    // 4) ji atiduodame i userio narsykle ir irasome i narsykles coockies
 
     let userData = null;
 
     try {
-        const sql = 'SELECT * FROM users WHERE username = ? AND password =? ;';
-        const result = await connection.execute(sql, [username]);
+        const sql = 'SELECT * FROM users WHERE username = ? AND password = ?;';
+        const result = await connection.execute(sql, [username, password]);
 
         if (result[0].length !== 1) {
             return res.json({
                 status: 'error',
-                data: 'Kilo problema s u vartiotojo paskira',
+                msg: 'Kilo problemo su vartotojo paskyra, susisiekite su client-supportu',
             });
         }
-        userData = result[0][0]
+
+        userData = result[0][0];
     } catch (error) {
         return res.json({
             status: 'error',
-            data: 'Nepavyko del tech kliuciu',
+            msg: 'Del techniniu kliuciu nepavyko ivykdyti prisijungimo proceso, pabandykite veliau',
         });
     }
-    const abc = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789'
-    let token ="";
-    for (let i = 0; i<20; i++) {
-        token+= abc[Math.floor(Math.random()*abc.length)];
-    }
 
+    const abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let token = '';
+
+    for (let i = 0; i < tokenlenght; i++) {
+        token += abc[Math.floor(Math.random() * abc.length)];
+    }
 
     try {
         const sql = 'INSERT INTO tokens (token, user_id) VALUES (?, ?);';
@@ -84,30 +118,30 @@ async function postLogin(req, res) {
         if (result[0].affectedRows !== 1) {
             return res.json({
                 status: 'error',
-                data: 'Prisijungti nepavyko, bandykite veliau',
+                msg: 'Nepavyko sukurti vartotojo sesijos, pabandykite veliau',
             });
         }
     } catch (error) {
         return res.json({
             status: 'error',
-            data: 'Del techniniu kliuciu nepavyko, pabandykite veliau',
+            msg: 'Del techniniu kliuciu nepavyko ivykdyti prisijungimo proceso, pabandykite veliau',
         });
     }
-    const cookie =[
-        'loginToken='+token,
+
+    const cookie = [
+        'loginToken=' + token,
         'domain=localhost',
         'path=/',
-        'max-age=864000',
-        // 'secure',
+        'max-age=3600',
+        // 'Secure',
         'SameSite=Lax',
-        'HttpOnly'
+        'HttpOnly',
+    ];
 
-    ]
-
-    return res 
-    .set('Set-Cokie', cookie.join(';'))
-    .json({
-        status: 'success',
-        data: 'Sėkmingai prisijungta',
-    });
+    return res
+        .set('Set-Cookie', cookie.join('; '))
+        .json({
+            status: 'success',
+            msg: 'Buvo sekmingai prisijungta',
+        });
 }

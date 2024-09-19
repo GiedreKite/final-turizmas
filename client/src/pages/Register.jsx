@@ -37,22 +37,19 @@ export function Register() {
         setPasswordError(passwordError);
 
         if (!usernameError && !passwordError) {
-
-          fetch('http://localhost:5028/api/register', {
-            method: 'POST',
-            headers: {
-              'Content-Type':'application/json',
-            },
-            body: JSON.stringify({
-              username, 
-              password,
+            fetch('http://localhost:5028/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                }),
             })
-          })
-
-          .then(res => res.json())
-          .then(data => setApiResponse(data))
-          .catch(err => console.error(err))
-            console.log('siunciame duomenis i serveri registracijai...');
+                .then(res => res.json())
+                .then(data => setApiResponse(data))
+                .catch(err => console.error(err));
         }
     }
 
@@ -64,11 +61,12 @@ export function Register() {
                     <form onSubmit={submitForm} className="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
                         <h1 className="h3 mb-3 fw-normal">Registracija</h1>
 
-{apiResponse && apiResponse.status === `success` ? <p className="alert alert-success">{apiResponse.data}</p> : null}
-{apiResponse && apiResponse.status === `error` ? <p className="alert alert-danger">{apiResponse.data}</p> : null}
+                        {apiResponse && apiResponse.status === 'success' ? <p className="alert alert-success">{apiResponse.msg}</p> : null}
+                        {apiResponse && apiResponse.status === 'error' ? <p className="alert alert-danger">{apiResponse.msg}</p> : null}
+
                         <div className="form-floating">
                             <input value={username} onChange={e => setUsername(e.target.value.trim())}
-                                type="text" id="username" placeholder="Vartotojo vardas"
+                                type="text" id="username" placeholder="Chuck"
                                 className={'form-control ' + (isFormValidated ? usernameError ? 'is-invalid' : 'is-valid' : '')} />
                             <label htmlFor="username">Spapyvardis</label>
                             {usernameError && <p className="invalid-feedback">{usernameError}</p>}
