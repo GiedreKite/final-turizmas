@@ -6,18 +6,18 @@ export const loginAPIrouter = express.Router();
 
 loginAPIrouter.post('/', postLogin);
 
-loginAPIrouter.get('/', getLogin);
+// loginAPIrouter.get('/', getLogin);
 const tokenlenght=20;
 
-async function getLogin(req, res) {
-    const coockies = req
-    .headers
-    .cookie
-    .split(';')
-    .map(s => s.trim().split('='))
-    .reduce((total, item) => ({...total, [item[0]]: item[1] }), {})
+// async function getLogin(req, res) {
+//     const coockies = req
+//     .headers
+//     .cookie
+//     .split(';')
+//     .map(s => s.trim().split('='))
+//     .reduce((total, item) => ({...total, [item[0]]: item[1] }), {})
 
-    console.log(req.headers.cookie)
+//     console.log(req.headers.cookie)
 //     if (typeof req.body !== 'object'
 //         || Array.isArray(req.body)
 //         || req.body === null
@@ -27,11 +27,11 @@ async function getLogin(req, res) {
 //             msg: 'Pagrindinis duomenu tipas turi buti objektas',
 //         });
 //     }   
-return res.json({
-            status: 'succsess',
-            msg: 'Pagrindinis duomenu tipas turi buti objektas',
-        });
-}
+// return res.json({
+//             status: 'succsess',
+//             msg: 'Pavyko',
+//         });
+// }
 
 loginAPIrouter.use((req, res) => {
     return res.json({

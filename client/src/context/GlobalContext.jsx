@@ -11,10 +11,31 @@ export const GlobalContext = createContext(initialContext);
 
 export function GlobalContextWrapper(props) {
     const [isLogedIn, setisLogedIn] = useState(initialContext.isLogedIn);
+    
 
 useEffect(() => {
-    fetch('htttp://localhost:5028/api/login', {
+    fetch('http://localhost:5028/api/login', {
         method: 'GET',
+        credentials:'include',
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(e=> console.error(e))
+
+}, [])
+useEffect(() => {
+    fetch('http://localhost:5028/api/login', {
+        method: 'POST',
+        credentials:'include',
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(e=> console.error(e))
+
+}, [])
+useEffect(() => {
+    fetch('http://localhost:5028/api/login', {
+        method: 'PUT',
         credentials:'include',
     })
     .then(res => res.json())
