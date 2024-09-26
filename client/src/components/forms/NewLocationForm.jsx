@@ -29,7 +29,7 @@ export function NewLocationForm() {
 
 
         if (!nameError && !imgError && !countryError && !cityError) {
-            fetch('http://localhost:5020/api/locations', {
+            fetch('http://localhost:5028/api/locations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
