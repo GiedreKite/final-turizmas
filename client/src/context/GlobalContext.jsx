@@ -3,53 +3,85 @@
 import { createContext, useEffect, useState } from "react";
 
 export const initialContext = {
-    isLogedIn: false,
-    changeLoginStatus: () => {},
+    isLoggedIn: false,
+    role: 'public',
+    username: '',
+    changeLoginStatus: () => { },
+    likedLocations: [],
+    addLike: () => { },
+    removeLike: () => { },
 };
 
 export const GlobalContext = createContext(initialContext);
 
 export function GlobalContextWrapper(props) {
-    const [isLogedIn, setisLogedIn] = useState(initialContext.isLogedIn);
-    
+    const [isLoggedIn, setIsLoggedIn] = useState(initialContext.isLoggedIn);
+    const [role, setRole] = useState(initialContext.role);
+    const [username, setUsername] = useState(initialContext.username);
+    const [likedLocations, setLikedLocations] = useState(initialContext.likedLocations);
 
-useEffect(() => {
-    fetch('http://localhost:5028/api/login', {
-        method: 'GET',
-        credentials:'include',
-    })
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(e=> console.error(e))
+    useEffect(() => {
+        fetch('http://localhost:5028/api/login', {
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then(res => res.json())
+            .then(data => {
+                setIsLoggedIn(data.isLoggedIn);
+                setRole(data.role);
+                setUsername(data.username);
+            })
+            .catch(e => console.error(e));
+    }, []);
 
-}, [])
-useEffect(() => {
-    fetch('http://localhost:5028/api/login', {
-        method: 'POST',
-        credentials:'include',
-    })
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(e=> console.error(e))
+    useEffect(() => {
+        fetch('http://localhost:5028/api/likes-list', {
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    setLikedLocations(data.list);
+                }
+            })
+            .catch(e => console.error(e));
+    }, []);
 
-}, [])
-useEffect(() => {
-    fetch('http://localhost:5028/api/login', {
-        method: 'PUT',
-        credentials:'include',
-    })
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(e=> console.error(e))
-
-}, [])
-
-    function changeLoginStatus(newStatus = false) {
-        setisLogedIn(newStatus);
+    function changeLoginStatus(newStatus = initialContext.isLoggedIn) {
+        setIsLoggedIn(newStatus);
     }
 
+    function changeRole(newRole = initialContext.role) {
+        setRole(newRole);
+    }
+
+    function changeUsername(newUsername = initialContext.username) {
+        setUsername(newUsername);
+    }
+
+    function addLike(locationId) {
+        console.log('Bandom prideti patikta lokacija:', locationId);
+    }
+
+    function removeLike(locationId) {
+        console.log('Bandom pasalinti patikta lokacija:', locationId);
+    }
+
+    const values = {
+        isLoggedIn,
+        changeLoginStatus,
+        role,
+        changeRole,
+        username,
+        changeUsername,
+        likedLocations,
+        addLike,
+        removeLike,
+    };
+
     return (
-        <GlobalContext.Provider value={{ isLogedIn, changeLoginStatus }}>
+        <GlobalContext.Provider value={values}>
             {props.children}
         </GlobalContext.Provider>
     );

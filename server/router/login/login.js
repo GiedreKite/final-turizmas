@@ -1,37 +1,14 @@
+import express from 'express';
 import { connection } from '../../db.js';
-import express from 'express'
+import { env } from '../../env.js';
 import { isValidPassword, isValidUsername } from '../../lib/isValid.js';
+
+const tokenLength = 20;
 
 export const loginAPIrouter = express.Router();
 
+loginAPIrouter.get('/', getLogin);
 loginAPIrouter.post('/', postLogin);
-
-// loginAPIrouter.get('/', getLogin);
-const tokenlenght=20;
-
-// async function getLogin(req, res) {
-//     const coockies = req
-//     .headers
-//     .cookie
-//     .split(';')
-//     .map(s => s.trim().split('='))
-//     .reduce((total, item) => ({...total, [item[0]]: item[1] }), {})
-
-//     console.log(req.headers.cookie)
-//     if (typeof req.body !== 'object'
-//         || Array.isArray(req.body)
-//         || req.body === null
-//     ) {
-//         return res.json({
-//             status: 'error',
-//             msg: 'Pagrindinis duomenu tipas turi buti objektas',
-//         });
-//     }   
-// return res.json({
-//             status: 'succsess',
-//             msg: 'Pavyko',
-//         });
-// }
 
 loginAPIrouter.use((req, res) => {
     return res.json({
@@ -39,6 +16,14 @@ loginAPIrouter.use((req, res) => {
         data: 'Toks HTTP metodas /api/login nepalaikomas',
     });
 });
+
+async function getLogin(req, res) {
+    return res.json({
+        isLoggedIn: req.user.isLoggedIn,
+        role: req.user.role,
+        username: req.user.username,
+    });
+}
 
 async function postLogin(req, res) {
     if (typeof req.body !== 'object'
@@ -56,7 +41,7 @@ async function postLogin(req, res) {
     if (Object.keys(req.body).length !== requiredFields.length) {
         return res.json({
             status: 'error',
-            msg: `Objekte turi buti tik ${requiredFields.length} raktai: ${requiredFields.join(', ')}`,
+            data: `Objekte turi buti tik ${requiredFields.length} raktai: ${requiredFields.join(', ')}`,
         });
     }
 
@@ -66,7 +51,7 @@ async function postLogin(req, res) {
     if (usernameError) {
         return res.json({
             status: 'error',
-            msg: usernameError,
+            data: usernameError,
         });
     }
 
@@ -74,7 +59,7 @@ async function postLogin(req, res) {
     if (passwordError) {
         return res.json({
             status: 'error',
-            msg: passwordError,
+            data: passwordError,
         });
     }
 
@@ -107,7 +92,7 @@ async function postLogin(req, res) {
     const abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let token = '';
 
-    for (let i = 0; i < tokenlenght; i++) {
+    for (let i = 0; i < tokenLength; i++) {
         token += abc[Math.floor(Math.random() * abc.length)];
     }
 
@@ -132,7 +117,7 @@ async function postLogin(req, res) {
         'loginToken=' + token,
         'domain=localhost',
         'path=/',
-        'max-age=3600',
+        'max-age=' + env.COOKIE_MAX_AGE,
         // 'Secure',
         'SameSite=Lax',
         'HttpOnly',
@@ -143,5 +128,8 @@ async function postLogin(req, res) {
         .json({
             status: 'success',
             msg: 'Buvo sekmingai prisijungta',
+            isLoggedIn: true,
+            username: userData.username,
+            role: userData.role,
         });
 }
