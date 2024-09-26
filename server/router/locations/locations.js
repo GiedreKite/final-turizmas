@@ -1,4 +1,3 @@
-
 import express from 'express';
 import { connection } from '../../db.js';
 import { isNonEmptyString } from '../../lib/isValid.js';

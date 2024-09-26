@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Footer } from "../components/footer/Footer";
 import { Header } from "../components/header/Header";
 import { GlobalContext } from "../context/GlobalContext";
-import { AdminLocationsList } from "../components/locations/AdminLocations";
+import { AdminLocationsList } from "../components/locations/AdminLocationsList";
 import { PublicLocationsList } from "../components/locations/PublicLocationsList";
 
 export function LocationListing() {

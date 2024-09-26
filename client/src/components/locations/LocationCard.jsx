@@ -9,10 +9,6 @@ export function LocationCard({ id, img, name, country }) {
     const navigate = useNavigate();
     const isLiked = false;
 
-    function handleLikeClick(){
-        
-    }
-
     function addLike() {
         if (!isLoggedIn) {
             navigate('/login');
